@@ -73,6 +73,7 @@ def get_instance(plugin):
     instance = LiveStatusLogStoreSqlite(plugin)
     return instance
 
+#############################################################################
 
 def row_factory(cursor, row):
     """Handler for the sqlite fetch method."""
@@ -83,8 +84,14 @@ class LiveStatusLogStoreError(Exception):
     pass
 
 
+#############################################################################
+
+DEFAULT_LOGS_AGE = 7
 
 _do_nothing_lambda = lambda: None
+
+#############################################################################
+
 
 class LiveStatusLogStoreSqlite(BaseModule):
 
@@ -105,8 +112,9 @@ class LiveStatusLogStoreSqlite(BaseModule):
         max_logs_age = getattr(modconf, 'max_logs_age', '365')
         maxmatch = re.match(r'^(\d+)([dwmy]*)$', max_logs_age)
         if maxmatch is None:
-            logger.warning("[Logstore SQLite] Warning: wrong format for max_logs_age. Must be <number>[d|w|m|y] or <number> and not %s" % max_logs_age)
-            self.max_logs_age = 7
+            logger.warning("[Logstore SQLite] Warning: wrong format for max_logs_age. Must be <number>[d|w|m|y] or <number> and not %r ; fallback to default=%s" % (
+                max_logs_age, DEFAULT_LOGS_AGE))
+            self.max_logs_age = DEFAULT_LOGS_AGE
         else:
             if not maxmatch.group(2):
                 self.max_logs_age = int(maxmatch.group(1))
