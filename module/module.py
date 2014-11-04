@@ -254,8 +254,8 @@ class LiveStatusLogStoreSqlite(BaseModule):
         """
         try:
             dbresults = tuple( self.select('SELECT MIN(time), MAX(time) FROM logs') )
-            mintime = dbresults[0][0]
-            maxtime = dbresults[0][1]
+            mintime = dbresults[0][0][0]
+            maxtime = dbresults[0][0][1]
         except sqlite3.Error, e:
             logger.error("[Logstore SQLite] An error occurred: %s" % str(e.args[0]))
             raise
